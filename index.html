@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HNG i14 Product Shippers: Hall of Fame</title>
+    <!-- Fonts Integration -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Reset & System Design System Tokens */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --font-header: 'Plus Jakarta Sans', sans-serif;
+            --font-body: 'Outfit', sans-serif;
+            
+            --bg-deep: #060607;
+            --bg-surface: #111113;
+            --bg-glass: rgba(15, 15, 17, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text-stark: #FFFFFF;
+            --text-muted: #8E8E93;
+            --text-dim: #444446;
+            --spotlight-glow: rgba(255, 255, 255, 0.03);
+            --radius-main: 20px;
+            --radius-inner: 12px;
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-cinematic: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-deep);
+            color: var(--text-stark);
+            line-height: 1.4;
+            padding: 0;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient Cosmic Starfield Moving Backdrop Plane */
+        .space-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .stars-layer-1, .stars-layer-2 {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                radial-gradient(1px 1px at 25px 40px, rgba(255,255,255,0.4) 100%, transparent),
+                radial-gradient(1.5px 1.5px at 75px 120px, rgba(255,255,255,0.3) 100%, transparent),
+                radial-gradient(1px 1px at 150px 220px, rgba(255,255,255,0.2) 100%, transparent),
+                radial-gradient(2px 2px at 230px 340px, rgba(255,255,255,0.15) 100%, transparent);
+            background-size: 400px 400px;
+            top: -50%;
+            left: -50%;
+        }
+
+        .stars-layer-1 {
+            animation: cosmicDrift 120s linear infinite;
+        }
+
+        .stars-layer-2 {
+            animation: cosmicDrift 180s linear infinite reverse;
+            opacity: 0.7;
+        }
+
+        @keyframes cosmicDrift {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+		
+		/* Shooting Stars */
+		.shooting-star {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 2px;
+			height: 2px;
+			background: #fff;
+			border-radius: 50%;
+			pointer-events: none;
+			z-index: 0;
+			opacity: 0;
+		}
+
+		.shooting-star::after {
+			content: '';
+			position: absolute;
+			top: 50%;
+			right: 0;
+			transform: translateY(-50%);
+			width: 80px;
+			height: 1px;
+			background: linear-gradient(to left, rgba(255,255,255,0.8), transparent);
+		}
+
+		@keyframes shootingStar {
+			0%   { opacity: 0; transform: translate(0, 0) rotate(var(--angle)); }
+			5%   { opacity: 1; }
+			90%  { opacity: 1; }
+			100% { opacity: 0; transform: translate(var(--travel-x), var(--travel-y)) rotate(var(--angle)); }
+		}
+
+        /* Layout Structure Grid Parameters */
+        .wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .site-header {
+            margin-bottom: 32px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .brand-title {
+            font-family: var(--font-header);
+            font-weight: 800;
+            font-size: 2.2rem;
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #FFF 0%, #A3A3A3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 2px;
+        }
+
+        /* Restricted Height Showcase Theater Card Panel */
+        .showcase-theater {
+            background: radial-gradient(circle at top left, rgba(255,255,255,0.02), transparent 50%), rgba(10, 10, 12, 0.45);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-main);
+            padding: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            overflow: hidden;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Cinematic Profile Switch Fade Class Trigger */
+        .showcase-theater.is-changing {
+            opacity: 0;
+        }
+
+        .theater-layout {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 32px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .theater-avatar-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: var(--radius-inner);
+            overflow: hidden;
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.4);
+            background: #161619;
+        }
+
+        .theater-avatar-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-smooth);
+        }
+
+        /* Carousel Navigation and Inner Track Configuration Layer */
+        .carousel-view-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            min-height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slider-window {
+            overflow: hidden;
+            width: 100%;
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .slider-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 400%;
+        }
+
+        .slide-pane {
+            width: 25%;
+            flex-shrink: 0;
+        }
+
+        .slide-pane h3 {
+            font-family: var(--font-header);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .kv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 10px 24px;
+        }
+
+        /* Row Layout Mapping supporting Ambient Modals */
+        .kv-row {
+            display: flex;
+            flex-direction: column;
+			width: 100%;
+            min-width: 0;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            padding-bottom: 4px;
+            padding-top: 4px;
+            border-radius: 4px;
+            transition: var(--transition-cinematic);
+        }
+
+        .kv-row.has-truncation {
+            cursor: pointer;
+        }
+
+        .kv-row.has-truncation:hover {
+            background: rgba(255, 255, 255, 0.04);
+            padding-left: 6px;
+        }
+
+        .kv-key {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .kv-value {
+            display: block;
+			font-size: 0.9rem;
+            color: var(--text-stark);
+            font-weight: 400;
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .kv-value a {
+            color: var(--text-stark);
+            text-decoration: none;
+            border-bottom: 1px dashed rgba(255,255,255,0.3);
+        }
+
+        .kv-value a:hover {
+            border-bottom-style: solid;
+        }
+
+        /* Carousel Horizontal Navigation Footer Strips */
+        .carousel-footer-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-glass);
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+
+        .active-slide-indicator {
+            font-size: 0.8rem;
+            font-family: var(--font-header);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .arrow-action-cluster {
+            display: flex;
+            gap: 8px;
+        }
+
+        .arrow-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            color: var(--text-stark);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+        }
+
+        .arrow-btn:hover:not(:disabled) {
+            background: #FFFFFF;
+            color: var(--bg-deep);
+            transform: scale(1.05);
+        }
+
+        .arrow-btn:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        /* Navigation Filter Controller Layouts */
+        .directory-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-label {
+            font-family: var(--font-header);
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .filter-cluster {
+            display: flex;
+            gap: 6px;
+        }
+
+        .filter-trigger {
+            background: transparent;
+            border: 1px solid var(--border-glass);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            font-family: var(--font-header);
+            font-size: 0.8rem;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .filter-trigger:hover {
+            color: var(--text-stark);
+            background: rgba(255,255,255,0.04);
+        }
+
+        .filter-trigger.active {
+            color: var(--bg-deep);
+            background: var(--text-stark);
+            border-color: var(--text-stark);
+        }
+
+        /* Thumbnail Grid Architecture */
+        .hall-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+            transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Cinematic Tab Change Animation Class States */
+        .hall-grid.is-changing {
+            opacity: 0;
+            transform: scale(0.98);
+        }
+
+        .inductee-tile {
+            background: rgba(17, 17, 19, 0.5);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-inner);
+            padding: 10px;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition-smooth);
+        }
+
+        .inductee-tile:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: rgba(255,255,255,0.25);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+        }
+
+        .inductee-tile.selected {
+            border-color: var(--text-stark);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .tile-photo-wrap {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 8px;
+            background: #161619;
+        }
+
+        .tile-photo-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%);
+            transition: var(--transition-smooth);
+        }
+
+        .inductee-tile:hover .tile-photo-wrap img,
+        .inductee-tile.selected .tile-photo-wrap img {
+            filter: grayscale(0%);
+        }
+
+        .tile-name {
+            font-family: var(--font-header);
+            font-size: 0.85rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tile-slackid {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ----------------------------------------------------------------
+           AMBIENT GLASS MODAL OVERLAY ARCHITECTURE
+        ------------------------------------------------------------------- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+			background: linear-gradient(135deg, #16161a 0%, #0d0d0f 100%);
+			border: 1px solid rgba(255, 255, 255, 0.15);
+			border-radius: var(--radius-main);
+			padding: 32px;
+			max-width: 520px;
+			width: 90%;
+			max-height: 75vh;
+			display: flex;
+			flex-direction: column;
+			position: relative;
+			transform: translateY(20px) scale(0.98);
+			box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+			transition: var(--transition-smooth);
+		}
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-close-trigger {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-glass);
+            color: var(--text-muted);
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem;
+            transition: var(--transition-smooth);
+        }
+
+        .modal-close-trigger:hover {
+            background: #FFFFFF;
+            color: #000;
+            border-color: #FFFFFF;
+        }
+
+        .modal-text {
+			font-size: 1.05rem;
+			line-height: 1.5;
+			color: var(--text-stark);
+			margin-top: 8px;
+			overflow-y: auto;
+			flex: 1;
+			padding-right: 4px;
+        }
+
+        /* Footer parameters */
+        .site-footer {
+            text-align: center;
+            border-top: 1px solid var(--border-glass);
+            padding-top: 32px;
+            margin-top: 48px;
+        }
+
+        .join-anchor {
+            font-family: var(--font-header);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            transition: var(--transition-smooth);
+        }
+
+        .join-anchor:hover {
+            color: var(--text-stark);
+        }
+
+        /* Mobile Responsive Viewports Break Layouts */
+        @media (max-width: 800px) {
+            .theater-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .theater-avatar-box {
+                max-width: 120px;
+                margin: 0 auto;
+            }
+            .kv-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .directory-controls {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .hall-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Space Engine Background Plane Layer -->
+    <div class="space-canvas" aria-hidden="true">
+        <div class="stars-layer-1"></div>
+        <div class="stars-layer-2"></div>
+		<div id="shootingStarContainer"></div>
+    </div>
+
+    <div class="wrapper">
+        <header class="site-header">
+            <h1 class="brand-title">The Shippers</h1>
+            <p class="brand-subtitle">HNG i14 Product Management Hall of Fame</p>
+        </header>
+
+        <!-- Compressed Dynamic Showcase Theater Module -->
+        <section class="showcase-theater" id="showcaseBox" aria-live="polite">
+            <!-- Loaded dynamically on system boot-up -->
+        </section>
+
+        <!-- Directory Tab Switcher Filters Layout -->
+        <div class="directory-controls">
+            <h2 class="section-label">The Stakeholders</h2>
+            <div class="filter-cluster" role="tablist">
+                <button class="filter-trigger active" id="btn-shippers" onclick="switchDirectoryTab('shippers')" role="tab" aria-selected="true">Shippers</button>
+                <button class="filter-trigger" id="btn-architects" onclick="switchDirectoryTab('architects')" role="tab" aria-selected="false">Architects</button>
+                <button class="filter-trigger" id="btn-backlog" onclick="switchDirectoryTab('backlog')" role="tab" aria-selected="false">Backlog</button>
+            </div>
+        </div>
+
+        <!-- Target Grid Area Placement Cards -->
+        <section class="hall-grid" id="tileGridArea"></section>
+
+        <footer class="site-footer">
+            <a href="https://hng.tech/internship" class="join-anchor" target="_blank" rel="noopener noreferrer">Advance to the HNG Internship Program</a>
+        </footer>
+    </div>
+
+    <!-- GLOBAL GLASS MODAL ELEMENT BASE STRUCT -->
+    <div class="modal-overlay" id="glassModalLayer" onclick="closeModalOnOuterTargetClick(event)">
+        <div class="modal-card">
+            <button class="modal-close-trigger" onclick="closeGlassModal()">✕</button>
+            <span class="kv-key" id="modalTargetKey" style="font-size: 0.8rem; letter-spacing: 0.05em;">Field Title</span>
+            <p class="modal-text" id="modalTargetValue">Full context text slot filler configuration area.</p>
+        </div>
+    </div>
+
+    <!-- SPREADSHEET SYNC SYSTEM JAVASCRIPT CORNER ENGINE -->
+    <script>
+// ====================================================================
+        // DATA SOURCE: local JSON file (edit data.json to update entries)
+        // ====================================================================
+        const DATA_FILE_URL = 'data.json';
+
+        const registryData = { shippers: [], architects: [], backlog: [] };
+        let activeTabCategory = 'shippers';
+        let focusedInducteeId = null;
+        let activeCarouselSlideIndex = 0;
+        const slideTitles = ["Profile", "HNG Experience", "HNG Relationships", "Moving on..."];
+
+        // Ambient Glass Overlay System Controllers
+        function openGlassModal(key, value) {
+            document.getElementById('modalTargetKey').innerText = key;
+            document.getElementById('modalTargetValue').innerText = value;
+            document.getElementById('glassModalLayer').classList.add('active');
+        }
+
+        function closeGlassModal() {
+            document.getElementById('glassModalLayer').classList.remove('active');
+        }
+
+        function closeModalOnOuterTargetClick(event) {
+            if (event.target.id === 'glassModalLayer') {
+                closeGlassModal();
+            }
+        }
+
+        // Evaluate whether text is overflowing to activate hover styling rules cleanly
+        function evaluateRowTruncationSafety(rowElement, textStr) {
+            if (textStr && textStr.length > 55) {
+                rowElement.classList.add('has-truncation');
+            }
+        }
+
+        // Horizontal Carousel Position Slider Shift Engine 
+        function shiftCarouselSlidePosition(direction) {
+            if (direction === 'next' && activeCarouselSlideIndex < 3) activeCarouselSlideIndex++;
+            if (direction === 'prev' && activeCarouselSlideIndex > 0) activeCarouselSlideIndex--;
+
+            document.getElementById('sliderTrack').style.transform = `translateX(-${activeCarouselSlideIndex * 25}%)`;
+            document.getElementById('slideTitleText').innerText = slideTitles[activeCarouselSlideIndex];
+            
+            document.getElementById('prevArrow').disabled = activeCarouselSlideIndex === 0;
+            document.getElementById('nextArrow').disabled = activeCarouselSlideIndex === 3;
+        }
+
+        // Individual Component Render Showcase Theater Box 
+        function refreshShowcaseTheaterProfileCard(itemId) {
+            const showcaseBox = document.getElementById('showcaseBox');
+            const targetPool = registryData[activeTabCategory];
+            const profile = targetPool.find(p => p.id === itemId);
+
+            if (!profile) return;
+
+            // Activate cinematic profile layer change phase out
+            showcaseBox.classList.add('is-changing');
+
+            setTimeout(() => {
+                showcaseBox.innerHTML = `
+                    <div class="theater-layout">
+                        <div class="theater-avatar-box">
+                            <img src="${profile.image || 'https://avatars.githubusercontent.com/u/placeholder?s=300'}" alt="${profile.name}">
+                        </div>
+                        <div class="carousel-view-panel">
+                            <div class="slider-window">
+                                <div class="slider-track" id="sliderTrack" style="transform: translateX(-${activeCarouselSlideIndex * 25}%);">
+                                    
+                                    <!-- Slide 1: Profile Module -->
+                                    <div class="slide-pane">
+                                        <h3>Profile</h3>
+                                        <div class="kv-grid">
+                                            <div class="kv-row" id="r-name"><span class="kv-key">Name</span><span class="kv-value">${profile.name}</span></div>
+                                            <div class="kv-row" id="r-alias"><span class="kv-key">Alias</span><span class="kv-value">${profile.alias}</span></div>
+                                            <div class="kv-row"><span class="kv-key">Socials</span><span class="kv-value">${profile.socials ? `<a href="${profile.socials}" target="_blank" rel="noopener">Open Profile</a>` : 'Not provided'}</span></div>
+                                            <div class="kv-row"><span class="kv-key">Portfolio</span><span class="kv-value">${profile.portfolio ? `<a href="${profile.portfolio}" target="_blank" rel="noopener">View Works</a>` : 'Not provided'}</span></div>
+                                            <div class="kv-row"><span class="kv-key">HNG i14 Rating</span><span class="kv-value">${profile.rating}</span></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Slide 2: HNG Experience Module -->
+                                    <div class="slide-pane">
+                                        <h3>HNG Experience</h3>
+                                        <div class="kv-grid">
+                                            <div class="kv-row" id="r-exp" onclick="openGlassModal('My Experience', \`${profile.experience}\`)"><span class="kv-key">My Experience</span><span class="kv-value">${profile.experience}</span></div>
+                                            <div class="kv-row" id="r-diff" onclick="openGlassModal('What I\\'d do Differently', \`${profile.differently}\`)"><span class="kv-key">What I'd do Differently</span><span class="kv-value">${profile.differently}</span></div>
+                                            <div class="kv-row" id="r-btask" onclick="openGlassModal('Best Stage Task', \`${profile.bestTask}\`)"><span class="kv-key">Best Stage Task</span><span class="kv-value">${profile.bestTask}</span></div>
+                                            <div class="kv-row" id="r-wtask" onclick="openGlassModal('Worst Stage Task', \`${profile.worstTask}\`)"><span class="kv-key">Worst Stage Task</span><span class="kv-value">${profile.worstTask}</span></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Slide 3: HNG Relationships Module -->
+                                    <div class="slide-pane">
+                                        <h3>HNG Relationships</h3>
+                                        <div class="kv-grid">
+                                            <div class="kv-row" id="r-takeaway" onclick="openGlassModal('Key Takeaways', \`${profile.takeaway}\`)"><span class="kv-key">Key Takeaways</span><span class="kv-value">${profile.takeaway}</span></div>
+                                            <div class="kv-row" id="r-mshout" onclick="openGlassModal('Mentors Shout-out', \`${profile.mentorsShout}\`)"><span class="kv-key">Mentors Shout-out</span><span class="kv-value">${profile.mentorsShout}</span></div>
+                                            <div class="kv-row" id="r-grate" onclick="openGlassModal('I\\'m Grateful For', \`${profile.grateful}\`)"><span class="kv-key">I'm Grateful For</span><span class="kv-value">${profile.grateful}</span></div>
+                                            <div class="kv-row" id="r-favprod" onclick="openGlassModal('Favourite Product', \`${profile.favProduct}\`)"><span class="kv-key">Favourite Product</span><span class="kv-value">${profile.favProduct}</span></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Slide 4: Future parameters -->
+                                    <div class="slide-pane">
+                                        <h3>Moving on...</h3>
+                                        <div class="kv-grid">
+                                            <div class="kv-row" id="r-next" onclick="openGlassModal('After HNG, what next?', \`${profile.next}\`)"><span class="kv-key">After HNG, what next?</span><span class="kv-value">${profile.next}</span></div>
+                                            <div class="kv-row" id="r-back"><span class="kv-key">Will I Be Back?</span><span class="kv-value">${profile.back}</span></div>
+                                            <div class="kv-row" id="r-adv" onclick="openGlassModal('Dear Prospective HNG i15...', \`${profile.advice}\`)"><span class="kv-key">Dear Prospective HNG i15...</span><span class="kv-value">${profile.advice}</span></div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Swipe Strips Controls -->
+                            <div class="carousel-footer-controls">
+                                <span class="active-slide-indicator" id="slideTitleText">${slideTitles[activeCarouselSlideIndex]}</span>
+                                <div class="arrow-action-cluster">
+                                    <button class="arrow-btn" id="prevArrow" onclick="shiftCarouselSlidePosition('prev')" aria-label="Previous info sector" ${activeCarouselSlideIndex === 0 ? 'disabled' : ''}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                    </button>
+                                    <button class="arrow-btn" id="nextArrow" onclick="shiftCarouselSlidePosition('next')" aria-label="Next info sector" ${activeCarouselSlideIndex === 3 ? 'disabled' : ''}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Evaluate long strings strings loops for active truncation detection classes
+                evaluateRowTruncationSafety(document.getElementById('r-exp'), profile.experience);
+                evaluateRowTruncationSafety(document.getElementById('r-diff'), profile.differently);
+                evaluateRowTruncationSafety(document.getElementById('r-btask'), profile.bestTask);
+                evaluateRowTruncationSafety(document.getElementById('r-wtask'), profile.worstTask);
+                evaluateRowTruncationSafety(document.getElementById('r-takeaway'), profile.takeaway);
+                evaluateRowTruncationSafety(document.getElementById('r-mshout'), profile.mentorsShout);
+                evaluateRowTruncationSafety(document.getElementById('r-grate'), profile.grateful);
+                evaluateRowTruncationSafety(document.getElementById('r-favprod'), profile.favProduct);
+                evaluateRowTruncationSafety(document.getElementById('r-next'), profile.next);
+                evaluateRowTruncationSafety(document.getElementById('r-adv'), profile.advice);
+
+                // Lift changing module card view back to full opacity visibility
+                showcaseBox.classList.remove('is-changing');
+            }, 150);
+        }
+
+        // Build Navigation Grid Directory Tiles Architecture 
+        function populateDirectoryTiles() {
+            const tileGridArea = document.getElementById('tileGridArea');
+            tileGridArea.innerHTML = '';
+
+            const items = registryData[activeTabCategory];
+
+            if (items.length === 0) {
+                tileGridArea.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 40px 0;">Awaiting live Google Sheet sync transmission rows...</div>`;
+                return;
+            }
+
+            items.forEach(inductee => {
+                const tile = document.createElement('div');
+                const isSelected = inductee.id === focusedInducteeId;
+                tile.className = `inductee-tile ${isSelected ? 'selected' : ''}`;
+                tile.setAttribute('tabindex', '0');
+                tile.setAttribute('role', 'button');
+
+                tile.innerHTML = `
+                    <div class="tile-photo-wrap">
+                        <img src="${inductee.image || 'https://avatars.githubusercontent.com/u/placeholder?s=150'}" alt="${inductee.name}">
+                    </div>
+                    <div class="tile-name">${inductee.name}</div>
+                    <div class="tile-slackid">${inductee.slackid}</div>
+                `;
+
+                const executeSelection = () => {
+                    focusedInducteeId = inductee.id;
+					activeCarouselSlideIndex = 0;
+                    document.querySelectorAll('.inductee-tile').forEach(t => t.classList.remove('selected'));
+                    tile.classList.add('selected');
+                    refreshShowcaseTheaterProfileCard(inductee.id);
+                };
+
+                tile.addEventListener('click', executeSelection);
+                tile.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        executeSelection();
+                    }
+                });
+
+                tileGridArea.appendChild(tile);
+            });
+        }
+
+        // Global Tab Swapping System Engine accompanied by Hardware Accelerated Scaling
+        function switchDirectoryTab(categoryKey) {
+            const gridArea = document.getElementById('tileGridArea');
+            activeTabCategory = categoryKey;
+            activeCarouselSlideIndex = 0; // Snap sliders position tracking state cleanly back to initial bounds on change
+
+            // Fade out the lower grids assembly
+            gridArea.classList.add('is-changing');
+
+            document.querySelectorAll('.filter-trigger').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
+
+            document.getElementById(`btn-${categoryKey}`).classList.add('active');
+            document.getElementById(`btn-${categoryKey}`).setAttribute('aria-selected', 'true');
+
+            const newPool = registryData[categoryKey];
+            focusedInducteeId = newPool.length > 0 ? newPool[0].id : null;
+
+            setTimeout(() => {
+                populateDirectoryTiles();
+                if (focusedInducteeId) {
+                    refreshShowcaseTheaterProfileCard(focusedInducteeId);
+                } else {
+                    document.getElementById('showcaseBox').innerHTML = `<div style="width:100%; text-align:center; color:var(--text-muted);">No profiles loaded inside this sector.</div>`;
+                }
+                // Lift layout views cleanly back to default visibility focus
+                gridArea.classList.remove('is-changing');
+            }, 250);
+        }
+
+		function spawnShootingStar() {
+			const star = document.createElement('div');
+			star.className = 'shooting-star';
+			const startX = Math.random() * window.innerWidth;
+			const startY = Math.random() * window.innerHeight * 0.5;
+			const angle = 20 + Math.random() * 30;
+			const distance = 200 + Math.random() * 300;
+			const travelX = Math.cos((angle * Math.PI) / 180) * distance;
+			const travelY = Math.sin((angle * Math.PI) / 180) * distance;
+			const duration = 1000 + Math.random() * 1500;
+			star.style.cssText = `
+				left: ${startX}px;
+				top: ${startY}px;
+				--angle: ${angle}deg;
+				--travel-x: ${travelX}px;
+				--travel-y: ${travelY}px;
+				animation: shootingStar ${duration}ms ease-out forwards;
+			`;
+			document.getElementById('shootingStarContainer').appendChild(star);
+			setTimeout(() => star.remove(), duration + 100);
+		}
+
+		// Spawn a shooting star every 4–9 seconds randomly
+		function scheduleShootingStar() {
+			spawnShootingStar();
+			setTimeout(scheduleShootingStar, 4000 + Math.random() * 5000);
+		}
+		scheduleShootingStar();
+
+        // NETWORK STREAM LIVE PROTOCOL SYSTEM INJECTOR 
+        async function fetchLiveSpreadsheetData() {
+            try {
+                // Pre-populate empty screen indicator spaces gracefully while connection initializes
+                document.getElementById('tileGridArea').innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 40px 0;">Loading directory data...</div>`;
+
+                const response = await fetch(DATA_FILE_URL + '?t=' + Date.now());
+                const data = await response.json();
+
+                // data.json is shaped as { shippers: [...], architects: [...], backlog: [...] }
+                // Each item already has an "id" and "category" is implied by its array.
+                registryData.shippers = (data.shippers || []).map(item => ({ ...item, category: 'shippers' }));
+                registryData.architects = (data.architects || []).map(item => ({ ...item, category: 'architects' }));
+                registryData.backlog = (data.backlog || []).map(item => ({ ...item, category: 'backlog' }));
+
+                // Set up landing profile view focuses safely
+                if (registryData.shippers.length > 0) focusedInducteeId = registryData.shippers[0].id;
+                populateDirectoryTiles();
+                refreshShowcaseTheaterProfileCard(focusedInducteeId);
+
+            } catch (error) {
+                console.error("Data-Sync disrupted: Unable to load data.json.", error);
+                document.getElementById('tileGridArea').innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #ff453a; font-size: 0.9rem; padding: 40px 0;">Could not load data.json. Make sure it's in the same folder as this page and the page is served over http/https (not opened directly as a file).</div>`;
+            }
+        }
+
+        // Attach escape physical keystroke triggers to close modal instantly
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeGlassModal();
+        });
+
+        // Run network execution tracks seamlessly on boot setup
+        fetchLiveSpreadsheetData();
+    </script>
+</body>
+</html>
